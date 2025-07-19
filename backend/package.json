@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "start": "nodemon src/index.js",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
   },
   "author": "",
   "license": "ISC",
