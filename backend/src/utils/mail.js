@@ -1,41 +1,40 @@
-import Mailgen from "mailgen";
-import nodemailer from "nodemailer";
-
+import Mailgen from "mailgen"
+import nodemailer from "nodemailer"
 
 const sendEmail = async (options) => {
-    var mailGenerator = new Mailgen({
-    theme: 'default',
+  var mailGenerator = new Mailgen({
+    theme: "default",
     product: {
-    // Appears in header & footer of e-mails
-    name: 'NexusMeet',
-    link: 'https://vivek.co.in/'
-    //logo   optional
-    }
-});
+      // Appears in header & footer of e-mails
+      name: "NexusMeet",
+      link: "https://vivek.co.in/",
+      //logo   optional
+    },
+  })
 
-// Generate an HTML email with the provided contents
-const emailHtml = mailGenerator.generate(options.mailgenContent);
+  // Generate an HTML email with the provided contents
+  const emailHtml = mailGenerator.generate(options.mailgenContent)
 
-// Generate the plaintext version of the e-mail (for clients that do not support HTML)
-const emailTextual = mailGenerator.generatePlaintext(options.mailgenContent);
+  // Generate the plaintext version of the e-mail (for clients that do not support HTML)
+  const emailTextual = mailGenerator.generatePlaintext(options.mailgenContent)
 
   // Create a nodemailer transporter instance which is responsible to send a mail
-//   const transporter = nodemailer.createTransport({
-//     host: process.env.MAILTRAP_HOST,
-//     port: process.env.MAILTRAP_PORT,
-//     auth: {
-//       user: process.env.MAILTRAP_USER,
-//       pass: process.env.MAILTRAP_PASS,
-//     },
-//   });
+  //   const transporter = nodemailer.createTransport({
+  //     host: process.env.MAILTRAP_HOST,
+  //     port: process.env.MAILTRAP_PORT,
+  //     auth: {
+  //       user: process.env.MAILTRAP_USER,
+  //       pass: process.env.MAILTRAP_PASS,
+  //     },
+  //   });
 
-         const transporter = nodemailer.createTransport({
-    service: 'gmail',
+  const transporter = nodemailer.createTransport({
+    service: "gmail",
     auth: {
       user: process.env.MAILTRAP_USER, // Your Gmail address
       pass: process.env.MAILTRAP_PASS, // Your App Password
     },
-  });
+  })
 
   const mail = {
     from: "mail.taskmanager@example.com", // We can name this anything. The mail will go to your Mailtrap inbox
@@ -49,11 +48,11 @@ const emailTextual = mailGenerator.generatePlaintext(options.mailgenContent);
     await transporter.sendMail(mail)
   } catch (error) {
     console.error(
-      "Email service failed silently. Make sure you have provided your MAILTRAP credentials in the .env file",
-    );
-    console.error("Error: ", error);
+      "Email service failed silently. Make sure you have provided your MAILTRAP credentials in the .env file"
+    )
+    console.error("Error: ", error)
   }
-};
+}
 
 const emailVerificationMailgenContent = (username, verificationUrl) => {
   return {
@@ -72,9 +71,8 @@ const emailVerificationMailgenContent = (username, verificationUrl) => {
       outro:
         "Need help, or have questions? Just reply to this email, we'd love to help.",
     },
-  };
-};
-
+  }
+}
 
 const forgotPasswordMailgenContent = (username, passwordResetUrl) => {
   return {
@@ -93,12 +91,11 @@ const forgotPasswordMailgenContent = (username, passwordResetUrl) => {
       outro:
         "Need help, or have questions? Just reply to this email, we'd love to help.",
     },
-  };
-};
-
-
+  }
+}
 
 export {
   emailVerificationMailgenContent,
   forgotPasswordMailgenContent,
-  sendEmail }
+  sendEmail,
+}
