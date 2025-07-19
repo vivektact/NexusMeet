@@ -14,10 +14,15 @@ This project is being developed as part of an academic submission and will evolv
 ✨ Planned Features
 Feature	Status
 🔐 Secure user authentication	🔜 Planned
+
 🌐 Match users by learning language	🔜 Planned
+
 💬 Real-time chat with typing status	🔜 Planned
+
 📹 Peer-to-peer video calling via WebRTC	🔜 Planned
+
 ...and many more planned to enhance language learning and user experience.	
+
 🛠 Tech Stack (Planned)
 Frontend: React, Tailwind CSS
 Backend: Node.js + Express
