@@ -1,7 +1,7 @@
 import { upsertStreamUser } from "../lib/stream.js";
 import User from "../models/user.js";
 import jwt from "jsonwebtoken";
-import { emailVerificationMailgenContent, sendEmail } from "../utils/mail.js";
+
 
 
 export async function register(req,res){

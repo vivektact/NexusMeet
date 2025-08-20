@@ -1,5 +1,7 @@
 import React from 'react';
 import { useAuth } from "../../context/AuthContext";
+import { Bell } from "lucide-react";
+
 
 
 export const Header = () => {
@@ -19,6 +21,19 @@ export const Header = () => {
         <div className="flex items-center space-x-4">
           {user ? (
     <>
+
+
+    {/* Notification Icon */}
+    <a
+      href="/notifications"
+      title="Notifications"
+      className="relative p-1 rounded-full hover:bg-white/10 transition"
+    >
+      <Bell className="w-6 h-6 text-cyan-400 hover:text-fuchsia-400 transition" />
+      {/* Uncomment below if you want a red dot for new notifications */}
+     <span className="absolute top-0 right-0 w-2 h-2 bg-fuchsia-500 rounded-full animate-ping"></span>
+    </a>
+
       {/* Avatar */}
       <img
         src={user.avatar?.url || "https://placehold.co/40x40"}

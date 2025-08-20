@@ -23,11 +23,11 @@ const App = () => {
           {/* Protected Routes */}
           <Route element={<ProtectedRoute />}>
             <Route path="/landing" element={<LandingPage />} />
-            <Route path="/notification" element={<NotificationPage />} />
+            <Route path="/notifications" element={<NotificationPage />} />
           </Route>
         </Route>
       </Routes>
-      <Toaster />
+      
     </div>
   );
 };

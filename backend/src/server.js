@@ -1,12 +1,13 @@
 import express from "express"
 import cookieParser from "cookie-parser";
 import cors from "cors";
-
+import friendRoutes from "./routes/friendRoutes.js";
 import path from "path";
 import dotenv from "dotenv"
 import authRoutes from "./routes/auth.route.js";
 import userRoutes from "./routes/user.route.js";
 import { connectDB } from "./lib/db.js";
+import devFixRoutes from "./routes/devFix.js";
 dotenv.config();
 const app =express()
 const PORT=process.env.PORT;
@@ -19,7 +20,10 @@ app.use(cookieParser());
 app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
 
 app.use("/api/user", userRoutes);
-app.use("/api/auth",authRoutes)
+app.use("/api/auth",authRoutes);
+app.use("/api/user", friendRoutes);
+app.use("/api/dev", devFixRoutes);
+
   connectDB()
   .then(() => {
     app.listen(PORT, () => {
