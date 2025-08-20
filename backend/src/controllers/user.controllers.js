@@ -1,5 +1,6 @@
 import crypto from "crypto"
 import jwt from "jsonwebtoken"
+import bcrypt from "bcryptjs"
 import {
   sendEmail,
   emailVerificationMailgenContent,
@@ -102,6 +103,7 @@ const verifyUser = asyncHandler(async (req, res) => {
 })
 
 const login = asyncHandler(async (req, res) => {
+  //getting emial and password
   const { email, password } = req.body
 
   if (!email || !password) {
@@ -110,44 +112,59 @@ const login = asyncHandler(async (req, res) => {
     })
   }
 
-  const user = await User.findOne({ email })
+  //Checking is verified
+  const user = await User.findOne({ email, isEmailVerified: true })
 
   if (!user) {
     return res.status(400).json({
-      message: "Invalid User Please Register",
+      message: "Invalid User Please Register or verify",
     })
   }
 
+  //checking password
   console.log("Password from body:", password)
   console.log("Password from DB:", user.password)
 
-  if (!(await bcrypt.compare(password, user.password))) {
-    return res.status(400).json({
-      message: "Invalid password or password",
-    })
+  //verifying password
+  const isPasswordValid = await user.isPasswordcorrect(password);
+  
+    if (!isPasswordValid) {
+    return res.status(401).json({ message: 'Invalid password' })
   }
 
-  // ✅ Create JWT token
-  const token = jwt.sign(
-    { id: user._id, email: user.email },
-    process.env.JWT_SECRET,
-    { expiresIn: process.env.JWT_EXPIRE }
-  )
+  //refresh token and access token
+  const accessToken = user.generateAccessToken()
+  const refreshToken = user.refreshAccessToken()
 
-  const cookieOptions = {
+  user.refreshToken = refreshToken;
+  await user.save()
+  
+
+  const cookieOptions1 = {
     httpOnly: true, // Can't access cookie via JS in browser
-    // secure: process.env.NODE_ENV === "production", // Only send over HTTPS in production
+     secure: process.env.NODE_ENV === "production", // Only send over HTTPS in production
     sameSite: "Strict", // Protection from CSRF
     maxAge: 24 * 60 * 60 * 1000, // 1 day in ms
+    path: "/" // for frontend
   }
 
-  res.cookie("token", token, cookieOptions)
+  const cookieOptions2 = {
+    httpOnly: true, // Can't access cookie via JS in browser
+     secure: process.env.NODE_ENV === "production", // Only send over HTTPS in production
+    sameSite: "Strict", // Protection from CSRF
+    maxAge: 60 * 1000,
+    path: "/"
+  }
+
+  res.cookie("refreshToken", refreshToken, cookieOptions1)
+  res.cookie("accessToken", accessToken, cookieOptions2)
 
   // ✅ Send token with success response
   return res.status(200).json({
     message: "User login successful",
-    token: token,
+    accessToken,
   })
+
 })
 
 const getMe = asyncHandler(async (req, res) => {
@@ -164,26 +181,45 @@ const getMe = asyncHandler(async (req, res) => {
     success: true,
     user,
   })
+  
 })
 
 const logout = asyncHandler(async (req, res) => {
+
+  const rtoken = req.cookies.refreshToken
+  const atoken = req.cookies.accessToken
+
+  const decoded = jwt.verify(rtoken, process.env.REFRESH_SECRET_KEY)
+
+  const user = await User.findById(decoded?.id)
+
+  if(!user){
+    return res.status(400).json({
+      message: "Invalid User"
+    })
+  }
+
+  user.refreshToken = undefined
+  await user.save()
+
+
+
+
   const cookieOptions = {
     httpOnly: true,
     expires: new Date(0), // Expire immediately
     secure: true, // Only over HTTPS (optional for dev)
     sameSite: "strict", // Protect against CSRF
   }
-  res.cookie("token", "", cookieOptions)
+  res.cookie("refreshToken", "", cookieOptions)
+  res.cookie("accessToken", "", cookieOptions)
+
 
   res.status(200).json({
     success: true,
     message: "Logged out successfully",
   })
 
-  res.status(500).json({
-    success: false,
-    message: "Logout failed",
-  })
 })
 
 const forgetPassword = asyncHandler(async (req, res) => {
@@ -285,6 +321,39 @@ const resetPassword = asyncHandler(async (req, res) => {
   }
 })
 
+const refreshToken = asyncHandler(async(req, res) => {
+  const rtoken = req.cookies.refreshToken
+
+  if(!rtoken){
+    return res.status(400).json(new ApiResponse(400, "", "User expired"));
+  }
+
+  const rdecode = jwt.verify(rtoken, process.env.REFRESH_SECRET_KEY);
+  const user = await User.findById(rdecode.id)
+
+  if(!user || user.refreshToken !== rtoken){
+     return res.status(401).json(new ApiResponse(401, "", "Invalid refresh token"));
+  }
+
+  const accessToken = user.generateAccessToken()
+
+ 
+  
+  const cookieOptions2 = {
+    httpOnly: true, // Can't access cookie via JS in browser
+     secure: process.env.NODE_ENV === "production", // Only send over HTTPS in production
+    sameSite: "Strict", // Protection from CSRF
+    maxAge: 3 * 60 * 1000, // 1 day in ms
+    path: "/"
+  }
+
+  res.cookie("accessToken", accessToken, cookieOptions2)
+  console.log("Access token generated")
+  return res.status(200).json(new ApiResponse(200, accessToken, "Access token refreshed"));
+
+
+})
+
 export {
   register,
   verifyUser,
@@ -293,4 +362,5 @@ export {
   logout,
   forgetPassword,
   resetPassword,
+  refreshToken,
 }

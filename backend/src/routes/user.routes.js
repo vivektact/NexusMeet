@@ -12,8 +12,9 @@ const router = express.Router()
 
 router.post("/register", register)
 router.post("/login", login)
-router.post("/logout", authMiddleware, logout)
-router.get("/check", authMiddleware, getMe)
+router.post("/logout", logout)
+router.get("/me", authMiddleware, getMe)
 router.post("/verify/:token", verifyUser)
+router.post("", verifyUser)
 
 export default router
