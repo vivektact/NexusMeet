@@ -1,77 +1,106 @@
-import React from 'react';
-// Make sure you have lucide-react installed: npm install lucide-react
-import { User, Mail, Lock } from 'lucide-react';
+import React, { useState } from 'react';
 
-const RegisterPage = () => {
+const languages = [
+  "English",
+  "Hindi",
+  "Spanish",
+  "French",
+  "German",
+  "Chinese",
+  "Arabic",
+  "Bengali",
+  "Japanese",
+  "Russian",
+];
+
+export default function RegisterPage() {
+  const [nativeLang, setNativeLang] = useState('');
+  const [desiredLang, setDesiredLang] = useState('');
+
   return (
-    <div className="relative flex items-center justify-center min-h-screen bg-[#0a0518] text-white overflow-hidden py-12">
-      {/* Background Glows for ambiance */}
-      <div className="absolute top-0 -left-1/4 w-96 h-96 md:w-[500px] md:h-[500px] bg-cyan-500/20 rounded-full blur-3xl opacity-50 animate-pulse"></div>
-      <div className="absolute bottom-0 -right-1/4 w-96 h-96 md:w-[500px] md:h-[500px] bg-fuchsia-500/20 rounded-full blur-3xl opacity-50 animate-pulse animation-delay-4000"></div>
-
-      {/* Register Form Container */}
-      <div className="relative z-10 w-full max-w-md p-8 space-y-8 bg-black/30 backdrop-blur-lg border border-white/10 rounded-2xl shadow-2xl">
-        <div className="text-center">
-          <h1 className="text-3xl font-extrabold text-white">
-            Create Your Account
-          </h1>
-          <p className="mt-2 text-gray-400">Join Nexus Meet and start connecting</p>
-        </div>
-
-        <form className="space-y-6">
-          {/* Username Input */}
-          <div className="relative">
-            <User className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
-            <input
-              type="text"
-              placeholder="Username"
-              required
-              className="w-full pl-10 pr-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-cyan-500 transition-all duration-300"
-            />
+    <div className="flex items-center justify-center min-h-screen bg-base-200">
+      <div className="card bg-base-100 w-full max-w-sm shadow-2xl">
+        <form className="card-body">
+          {/* Profile pic at the top */}
+          <div className="flex justify-center mb-4">
+            <div className="avatar">
+              <div className="w-20 rounded-full ring ring-primary ring-offset-base-100 ring-offset-2">
+                {/* Placeholder image */}
+                <img src="https://ui-avatars.com/api/?name=User&background=random" alt="Profile" />
+              </div>
+            </div>
           </div>
 
-          {/* Email Input */}
-          <div className="relative">
-            <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
-            <input
-              type="email"
-              placeholder="Email Address"
-              required
-              className="w-full pl-10 pr-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-cyan-500 transition-all duration-300"
-            />
-          </div>
-
-          {/* Password Input */}
-          <div className="relative">
-            <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
-            <input
-              type="password"
-              placeholder="Password"
-              required
-              className="w-full pl-10 pr-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-fuchsia-500 transition-all duration-300"
-            />
-          </div>
+          <label className="label">
+            <span className="label-text">Username</span>
+          </label>
+          <input type="text" placeholder="username" className="input input-bordered" required />
           
-          {/* Submit Button */}
-          <div>
-            <button
-              type="submit"
-              className="w-full px-8 py-3 text-lg font-bold text-white bg-gradient-to-r from-cyan-500 to-fuchsia-600 rounded-lg transition-all duration-300 hover:from-cyan-600 hover:to-fuchsia-700 focus:outline-none focus:ring-4 focus:ring-fuchsia-500/50"
-            >
+          <label className="label">
+            <span className="label-text">Name</span>
+          </label>
+          <input type="text" placeholder="name" className="input input-bordered" required />
+          
+          <label className="label">
+            <span className="label-text">Email</span>
+          </label>
+          <input type="email" placeholder="email" className="input input-bordered" required />
+          
+          <label className="label">
+            <span className="label-text">Password</span>
+          </label>
+          <input type="password" placeholder="password" className="input input-bordered" required />
+
+          {/* Native Language Selector */}
+          <label className="label">
+            <span className="label-text">Native Language</span>
+          </label>
+          <select
+            className="select select-bordered"
+            value={nativeLang}
+            onChange={(e) => setNativeLang(e.target.value)}
+            required
+          >
+            <option value="">Select your native language</option>
+            {languages.map((lang) => (
+              <option key={lang} value={lang}>{lang}</option>
+            ))}
+          </select>
+
+          {/* Desired Language Selector */}
+          <label className="label">
+            <span className="label-text">Desired Language</span>
+          </label>
+          <select
+            className="select select-bordered"
+            value={desiredLang}
+            onChange={(e) => setDesiredLang(e.target.value)}
+            required
+          >
+            <option value="">Select desired language</option>
+            {languages.map((lang) => (
+              <option key={lang} value={lang}>{lang}</option>
+            ))}
+          </select>
+
+          <label className="label">
+            <span className="label-text">Bio</span>
+          </label>
+          <textarea placeholder="Bio" className="textarea textarea-success" />
+
+          <input type="file" className="file-input file-input-neutral" />
+          
+          {/* Buttons */}
+          <div className="form-control mt-6 flex flex-row gap-4">
+            <button type="button" className="btn btn-primary" onClick={() => {/* handle login navigation */}}>
+              Login
+            </button>
+            <button type="submit" className="btn btn-primary">
               Register
             </button>
           </div>
         </form>
-
-        <p className="text-center text-gray-400">
-          Already have an account?{' '}
-          <a href="/login" className="font-medium text-cyan-400 hover:text-cyan-300">
-            Login
-          </a>
-        </p>
       </div>
     </div>
   );
-};
-
-export default RegisterPage;
+}

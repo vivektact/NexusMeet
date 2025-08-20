@@ -1,33 +1,27 @@
-// src/routes/index.jsx
-import { createBrowserRouter } from 'react-router-dom'
-import Home from "../pages/HomePage.jsx"
-import LoginPage from '../pages/LoginPage.jsx'
-import RegisterPage from '../pages/RegisterPage.jsx'
+import { Route } from "react-router-dom";
+import { createRoot } from "react-dom/client";
+import { createBrowserRouter, createRoutesFromElements } from "react-router-dom";
+import MainLayout from "../layout/MainLayout";
+import HomePage from "../pages/HomePage";
+import RegisterPage from "../pages/RegisterPage";
+import Dashboard from "../pages/Dashboard";
+import  LoginPage from "../pages/LoginPage";
 
 
 
-import RootLayout from "../layout/MainLayout.jsx"
 
-const router = createBrowserRouter([
-    {
-       path: '/',
-       element: <RootLayout />,
-       children: [
-        {
-            path: "",
-            element: <Home/>
-        },
-        {
-            path: "/login",
-            element: <LoginPage/>
-        },
-        {
-            path: "/register",
-            element: <RegisterPage/>
-        }
-       ]
+const router = createBrowserRouter(
+    createRoutesFromElements(
+        <Route path='/' element={<MainLayout/>}>
+            <Route index element={<HomePage/>}/>
+            <Route path="login" element={<LoginPage/>}/>
+            <Route path="register" element={<RegisterPage/>}/>
+            <Route path="user/:userId" element={<Dashboard/>}/>
+            <Route path="dashboard" element={<Dashboard/>}/>
+        </Route>
+        
+    )
+)
 
-    }
-])
 
 export default router

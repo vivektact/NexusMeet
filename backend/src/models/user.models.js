@@ -85,6 +85,12 @@ const userSchema = new Schema(
     emailVerificationExpiry: {
       type: Date,
     },
+    friends: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User"
+      }
+    ]
   },
   { timestamps: true }
 )

@@ -1,32 +1,36 @@
-import React from 'react';
+import { Link } from 'react-router-dom';
 
-export const Header = () => {
+
+const Header = () => {
   return (
-    // UPDATED: Changed background to match the HomePage for a consistent look
-    <header className="sticky top-0 z-50 bg-[#0a0518] border-b border-white/10">
-      <div className="container mx-auto px-6 py-4 flex justify-between items-center">
-        {/* Logo */}
-        <div className="text-2xl font-bold">
-          <a href="/" className="bg-gradient-to-r from-cyan-400 to-fuchsia-500 text-transparent bg-clip-text hover:opacity-80 transition-opacity">
-            Nexus Meet
-          </a>
-        </div>
+   <div className="navbar bg-base-100">
+  <div className="flex-1">
+    <a className="btn btn-ghost text-xl">NexusMeet</a>
+  </div>
+    
+  <div className="dropdown dropdown-end">
+    <Link to="/login" className="btn">Login</Link>
+  </div>
+  <div className="dropdown dropdown-end">
+    <Link to="/register" className="btn">Register</Link>
+  </div>
 
-        {/* Auth Buttons */}
-        <div className="flex items-center space-x-4">
-          <a href="/login" className="text-gray-300 hover:text-white transition-colors font-medium">
-            Login
-          </a>
-          <a
-            href="/register"
-            className="bg-fuchsia-600 hover:bg-fuchsia-700 text-white font-bold py-2 px-4 rounded-full transition-colors"
-          >
-            Register
-          </a>
+    <div className="dropdown dropdown-end">
+      <div tabIndex={0} role="button" className="btn btn-ghost btn-circle avatar">
+        <div className="w-10 rounded-full">
+          <img
+            alt="Tailwind CSS Navbar component"
+            src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp" />
         </div>
       </div>
-    </header>
-  );
-};
+    </div>
 
-export default Header;
+    <div className="dropdown dropdown-end">
+    <Link to="/logout" className="btn">Logout</Link>
+  </div>
+
+</div>
+  )
+}
+
+export default Header

@@ -1,31 +1,29 @@
-import { asyncHandler } from "../utils/async-handler.js"
-import { ApiResponse } from "../utils/api-response.js"
-import jwt from "jsonwebtoken"
-import prisma from "../lib/db.js"
+import jwt from "jsonwebtoken";
+import { User } from "../models/user.models.js"; // Import your Mongoose User model
+import { ApiResponse } from "../utils/api-response.js";
 
-const authMiddleware = asyncHandler(async (req, res, next) => {
-  const token = req.cookies.token
+export const authMiddleware =async (req, res, next) => {
+  
+  const token = req.cookies.accessToken;
 
   if (!token) {
-    return res.status(404).json(new ApiResponse(401, null, "Unauthorized"))
+    return res.status(403).json(new ApiResponse(403, token, "User not available"));
   }
 
-  const decode = jwt.verify(token, process.env.JWT_SECRET)
+  try {
+    const decodedToken = jwt.verify(token, process.env.ACCESS_SECRET_KEY);
 
-  const user = await prisma.User.findUnique({
-    where: {
-      id: decode.id,
-    },
-    select: {
-      id: true,
-      email: true,
-      image: true,
-      role: true,
-      name: true,
-    },
-  })
-  req.user = user
-  next()
-})
+    const user = await User.findById(decodedToken?.id).select("-password");
+    if (!user) {
+      return res.status(400).json(new ApiResponse(400, user, "User not found"));
+    }
+    req.user = user;
 
-export { authMiddleware }
+    next();
+    
+  } catch (error) {
+    return res.status(403).json({
+        message: error?.message || "Invalid token.",
+    });
+  }
+}

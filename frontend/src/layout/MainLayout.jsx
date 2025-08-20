@@ -1,17 +1,20 @@
-import React from 'react';
-import { Outlet } from 'react-router-dom';
-import Header from '../components/header/Header'; // Adjust path if needed
-import Footer from '../components/footer/Footer.jsx';
+import Footer from "../components/footer/Footer";
+import Header from "../components/header/Header"; 
+import { Outlet } from "react-router-dom";
+import { Toaster } from 'react-hot-toast';
 
-const RootLayout = () => {
+const MainLayout = () => {
   return (
     <>
-      <Header />
-      <Outlet />
-      <Footer/>
-     
+    <Header/>
+    <Outlet/>
+    <Footer/>
+    <Toaster position="top-center" />
     </>
-  );
-};
+  )
+}
 
-export default RootLayout;
+export default MainLayout
+
+
+
