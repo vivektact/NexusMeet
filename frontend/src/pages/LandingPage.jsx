@@ -1,40 +1,57 @@
 import React, { useEffect, useState } from "react";
 import { axiosInstance } from "../lib/axios";
+import FriendsList from "../components/FriendsList";
 
 const LandingPage = () => {
   const [user, setUser] = useState(null);
   const [learners, setLearners] = useState([]);
-  //const [friends, setFriends] = useState([]);
+  const [friends, setFriends] = useState([]);
 
   useEffect(() => {
-    const fetchData = async () => {
+  const fetchData = async () => {
+    try {
+      // 1) current user
+      const { data: me } = await axiosInstance.get("/user/landing", { withCredentials: true });
+      const currentUser = me.user;
+      setUser(currentUser);
+
+      // 2) friends (accepted)
+      let friendsArr = [];
       try {
-        const res = await axiosInstance.get("/user/landing", { withCredentials: true });
-        setUser(res.data.user);
-
-        const allUsers = await axiosInstance.get("/user/all", { withCredentials: true });
-        const filtered = allUsers.data.users.filter(
-          (u) =>
-            u._id !== res.data.user._id && // exclude self
-            u.nativeLanguage.toLowerCase() === res.data.user.desiredLanguage.toLowerCase()
-        );
-        setLearners(filtered);
-        /*
-        // ✅ Fetch friends
-        const friendsRes = await axiosInstance.get("/friends/friends", { withCredentials: true });
-        setFriends(friendsRes.data);
-        */
-      } 
-        catch (err) {
-        console.error("Error fetching users:", err.response?.data?.message || err.message);
-        window.location.href = "/login";
+        const { data } = await axiosInstance.get("/user/friends", { withCredentials: true });
+        friendsArr = Array.isArray(data) ? data : [];
+        setFriends(friendsArr);
+      } catch (friendError) {
+        console.warn("Friends fetch failed:", friendError?.message || friendError);
       }
-    };
 
-    fetchData();
-  }, []);
+      // 3) all users
+      const { data: allUsersRes } = await axiosInstance.get("/user/all", { withCredentials: true });
+
+      // 4) exclude self + exclude friends + language match
+      const friendIdSet = new Set(friendsArr.map(f => f._id));
+      const filtered = (allUsersRes.users || []).filter((u) =>
+        u._id !== currentUser._id &&
+        !friendIdSet.has(u._id) &&
+        (u.nativeLanguage || "").toLowerCase() === (currentUser.desiredLanguage || "").toLowerCase()
+        // If you want mutual exchange, also add:
+        // && (u.desiredLanguage || "").toLowerCase() === (currentUser.nativeLanguage || "").toLowerCase()
+      );
+
+      setLearners(filtered);
+    } catch (err) {
+      console.error("Error fetching user data:", err.response?.data?.message || err.message);
+      if (err.response?.status === 401) window.location.href = "/login";
+    }
+  };
+
+  fetchData();
+}, []);
+
+
 
   if (!user) return <div className="text-white p-6">Loading...</div>;
+  // ✅ Send Friend Request
   const sendRequest = async (receiverId) => {
   try {
     await axiosInstance.post(
@@ -48,13 +65,13 @@ const LandingPage = () => {
     alert(err.response?.data?.message || "Error sending friend request");
   }
 };
-/*
+
  // ✅ Placeholder for starting chat
   const startChat = (friendId) => {
     console.log("Start chat with:", friendId);
     // Later: redirect to /chat/:friendId
   };
-  */
+  
 
 
 
@@ -75,7 +92,7 @@ const LandingPage = () => {
 
        {/* ✅ Friends Section
       <div className="mt-10">
-        <h2 className="text-2xl font-semibold text-green-400 mb-6">
+        <h2 className="text-2xl font-semibold text-cyan-400 mb-6">
           Your Friends
         </h2>
         {friends.length === 0 ? (
@@ -101,7 +118,7 @@ const LandingPage = () => {
                 {friend.bio && <p className="text-sm text-gray-400">{friend.bio}</p>}
                 <button
                   onClick={() => startChat(friend._id)}
-                  className="w-full py-2 mt-2 bg-gradient-to-r from-green-400 to-cyan-500 hover:opacity-90 rounded-full text-sm font-semibold text-black transition-all"
+                  className="w-full py-2 mt-2 bg-gradient-to-r from-cyan-500 to-fuchsia-500 hover:opacity-90 rounded-full text-sm font-semibold text-black transition-all"
                 >
                   Start Chat
                 </button>
@@ -110,7 +127,10 @@ const LandingPage = () => {
           </div>
         )}
       </div>
-       */}
+}*/}
+{/* ✅ Friends Section via FriendsList Component
+      <FriendsList friends={friends} onStartChat={startChat} /> */}
+      <FriendsList />
 
       {/* Meet New Learners Section */}
       <div className="mt-10">

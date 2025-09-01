@@ -67,15 +67,12 @@ console.log(`stream user created for ${newUser.fullName}`);
 }
 
 
-    // const token= jwt.sign({userId:newUser._id},process.env.JWT_SECRET_KEY,
-    //     {expiresIn:"7d"})
+    
 
-    //     res.cookie ("jwt",token,{maxAge:7*24*60*60*1000,
-    //         httpOnly:true,
-    //         sameSite:"strict",
-    //         secure:process.env.NODE_ENV==="production"
 
-    //     })
+
+
+
     
         const userResponse = newUser.toObject();
     delete userResponse.password;
@@ -105,7 +102,8 @@ export async  function login(req,res){
 
         res.cookie ("jwt",token,{maxAge:7*24*60*60*1000,
             httpOnly:true,
-            sameSite:"strict",
+            //sameSite:"strict",
+            sameSite: process.env.NODE_ENV === "production" ? "strict" : "lax", // allow for different ports in dev
             secure:process.env.NODE_ENV==="production"
 
         });

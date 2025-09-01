@@ -63,21 +63,43 @@ export const getNotifications = async (req, res) => {
 
 // Accept friend request
 export const acceptFriendRequest = async (req, res) => {
+    try{
   const { requestId } = req.body;
   const userId = req.user.id;
-
+// Find the request
   const request = await FriendRequest.findById(requestId);
   if (!request || request.receiver.toString() !== userId)
     return res.status(403).json({ message: "Not authorized" });
 
-  // Update the original request to accepted
-  request.status = "accepted";
-  request.notified = false;
-  await request.save();
+  // Update request status
+    request.status = "accepted";
+    request.notified = false;
+    await request.save();
 
-  
+    // Add friends in User model
+    const sender = await User.findById(request.sender);
+    const receiver = await User.findById(request.receiver);
 
-  res.status(200).json({ message: "Friend request accepted" });
+    if (!sender || !receiver) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // Add to each other's friends list if not already present
+    if (!sender.friends.includes(receiver._id)) {
+      sender.friends.push(receiver._id);
+    }
+    if (!receiver.friends.includes(sender._id)) {
+      receiver.friends.push(sender._id);
+    }
+
+    await sender.save();
+    await receiver.save();
+
+    res.status(200).json({ message: "Friend request accepted and users are now friends" });
+  } catch (error) {
+    console.error("Error accepting friend request:", error.message);
+    res.status(500).json({ message: "Internal server error" });
+  }
 };
 
 //Decline Friend Request
@@ -112,31 +134,20 @@ export const markAsNotified = async (req, res) => {
 
   res.status(200).json({ message: "Marked as notified" });
 };
-/*
+
 // Get Friends List
 export const getFriends = async (req, res) => {
   try {
     const userId = req.user.id;
 
-    // Find all requests where status is accepted and the current user is involved
-    const requests = await FriendRequest.find({
-      status: "accepted",
-      $or: [{ sender: userId }, { receiver: userId }],
-    })
-      .populate("sender", "fullName username avatar bio")
-      .populate("receiver", "fullName username avatar bio");
+    const user = await User.findById(userId).populate("friends", "fullName username avatar bio nativeLanguage desiredLanguage");
+    if (!user) return res.status(404).json({ message: "User not found" });
 
-    // Extract friend objects (not myself)
-    const friends = requests.map((req) =>
-      req.sender._id.toString() === userId ? req.receiver : req.sender
-    );
-
-    res.status(200).json(friends);
+    res.status(200).json(user.friends);
   } catch (error) {
     console.error("Error fetching friends:", error.message);
     res.status(500).json({ message: "Failed to fetch friends" });
   }
 };
 
-*/
 
