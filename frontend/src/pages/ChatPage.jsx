@@ -39,10 +39,11 @@ function ChatPage() {
   }, [friendId]);
 
 
-// Chatt area --
+// Chat area --
  const handleEmojiSelect = (emoji) => {
     setInput((prev) => prev + emoji.native);
   };
+  
 
   const toggleEmojiPicker = () => {
     setShowEmojiPicker(!showEmojiPicker);
