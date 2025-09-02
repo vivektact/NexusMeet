@@ -24,7 +24,8 @@ Feature	Status
 ...and many more planned to enhance language learning and user experience.	
 
 🛠 Tech Stack (Planned)
-Frontend: React, Tailwind CSS
-Backend: Node.js + Express
-Real-Time Communication: WebRTC + Socket.IO
-Database: MongoDB
+- Frontend: React, Tailwind CSS
+- Backend: Node.js + Express
+- Real-Time Communication: WebRTC + Socket.IO
+- Database: MongoDB
+
