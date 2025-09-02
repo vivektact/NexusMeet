@@ -9,6 +9,7 @@ import LoginPage from "./pages/LoginPage.jsx";
 import HomePage from "./pages/HomePage.jsx";
 import NotificationPage from "./pages/NotificationPage.jsx";
 import ProtectedRoute from "./routes/ProtectedRoute.jsx";
+import ChatPage from "./pages/ChatPage.jsx";
 
 const App = () => {
   return (
@@ -24,6 +25,7 @@ const App = () => {
           <Route element={<ProtectedRoute />}>
             <Route path="/landing" element={<LandingPage />} />
             <Route path="/notifications" element={<NotificationPage />} />
+            <Route path="/chat/friend/:friendId" element={<ChatPage />} />
           </Route>
         </Route>
       </Routes>

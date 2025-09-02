@@ -35,6 +35,22 @@ router.get("/all", protect, async (req, res) => {
   }
 });
 
+
+// ✅ GET /user/:id - fetch user by ID
+router.get("/friend/:id", protect, async (req, res) => {
+  try {
+    const friend = await User.findById(req.params.id).select(
+      "fullName username avatar nativeLanguage desiredLanguage bio city"
+    );
+    if (!friend) return res.status(404).json({ message: "User not found" });
+
+    res.json(friend);
+  } catch (err) {
+    res.status(500).json({ message: "Failed to fetch user", error: err.message });
+  }
+});
+
+
 // ✅ POST /user/friend-request - send request
 router.post("/friend-request", protect, sendFriendRequest);
 

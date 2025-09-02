@@ -1,13 +1,16 @@
 import React, { useEffect, useState } from "react";
 import { axiosInstance } from "../lib/axios";
 import { useAuth } from "../context/AuthContext";
+import { useNavigate } from "react-router";
 
 const FriendsList = () => {
   const [friends, setFriends] = useState([]);
   const [loading, setLoading] = useState(true);
   const { user } = useAuth();
+  const navigate = useNavigate();
 
   useEffect(() => {
+    
     const fetchFriends = async () => {
       try {
         const res = await axiosInstance.get("/user/friends", { withCredentials: true });
@@ -23,9 +26,9 @@ const FriendsList = () => {
   }, []);
   const startChat = (friendId) => {
     console.log("Start chat with:", friendId);
-    // ✅ Later, redirect to /chat/:friendId using React Router
-    // Example:
-    // navigate(`/chat/${friendId}`);
+    
+    
+     navigate(`/chat/friend/${friendId}`);
   };
 
 
